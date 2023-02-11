@@ -1,3 +1,5 @@
+data "aws_availability_zones" "available" {}
+
 resource "random_id" "random" {
 	byte_length = 2
 }
@@ -44,5 +46,16 @@ resource "aws_default_route_table" "terraform_private_rt" {
 
 	tags = {
 		Name = "terraform-private"
+	}
+}
+
+resource "aws_subnet" "terraform_public_subnet" {
+	vpc_id = aws_vpc.terraform_vpc.id
+	cidr_block = var.public_cidrs
+	map_public_ip_on_launch = true # all instances will have public ip
+	availability_zone = data.aws_availability_zones.available.names[0]
+
+	tags = {
+		Name = "terraform-public"
 	}
 }
