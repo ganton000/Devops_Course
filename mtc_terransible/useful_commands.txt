@@ -44,3 +44,5 @@ resource "resource_type" "logical_name" {
 
 this will create the new resource before destroying the current one, eliminating any errors that may be caused by other resources that depend on the currently existing one.
 
+## accessing variables in terraform console
+The console looks for the vars only in terraform.tfvars file!
