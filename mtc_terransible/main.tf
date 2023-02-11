@@ -1,3 +1,9 @@
+## local variables/params
+locals {
+	azs = data.aws_availability_zones.available.names[count.index]
+}
+
+## data source
 data "aws_availability_zones" "available" {}
 
 resource "random_id" "random" {
@@ -54,7 +60,7 @@ resource "aws_subnet" "terraform_public_subnet" {
 	vpc_id = aws_vpc.terraform_vpc.id
 	cidr_block = var.public_cidrs[count.index]
 	map_public_ip_on_launch = true # all instances will have public ip
-	availability_zone = data.aws_availability_zones.available.names[count.index]
+	availability_zone = local.azs[count.index]
 
 	tags = {
 		Name = "terraform-public-${count.index + 1}"
@@ -66,7 +72,7 @@ resource "aws_subnet" "terraform_private_subnet" {
 	vpc_id = aws_vpc.terraform_vpc.id
 	cidr_block = var.private_cidrs[count.index]
 	map_public_ip_on_launch = false
-	availability_zone = data.aws_availability_zones.available.names[count.index]
+	availability_zone = local.azs[count.index]
 
 	tags = {
 		Name = "terraform-private-${count.index +1}"
