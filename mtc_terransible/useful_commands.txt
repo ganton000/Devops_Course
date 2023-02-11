@@ -1,0 +1,17 @@
+terraform state list # gets state names
+terraform state show <name_of_org.name_of_resource>
+terraform show -json # json format of terraform resources
+
+
+## parsing json
+terraform show -json | jq ."values"."root_module"."resources"[0]."values"."cidr_block"
+
+## to remove quotes from jq output, pass in -r flag
+terraform show -json | jq -r ."values"."root_module"."resources"[0]."values"."cidr_block"
+
+## modularizing variables from your tf template
+- generally create a variables.tf outlining the type and name of variables
+- could set default as value or provide the values dynamically via .tfvar and terrform cli
+- a .tfvar file will act as a key = value mapping for variable name to its value. This file will be passed in command line as such:
+
+terraform apply -var-file="<file_name>.tfvars"
