@@ -1,7 +1,7 @@
-terraform state list # gets state names
-terraform state show <name_of_org.name_of_resource>
+terraform state list # gets resource names within recent state
+terraform state show <name_of_resource.logical_resource_name>
 terraform show -json # json format of terraform resources
-
+terraform init # installs providers within script
 
 ## parsing json
 terraform show -json | jq ."values"."root_module"."resources"[0]."values"."cidr_block"
@@ -15,3 +15,9 @@ terraform show -json | jq -r ."values"."root_module"."resources"[0]."values"."ci
 - a .tfvar file will act as a key = value mapping for variable name to its value. This file will be passed in command line as such:
 
 terraform apply -var-file="<file_name>.tfvars"
+
+## example of parsing id from resource's state response
+terraform state show aws_vpc.terraform-vpc | grep "id"
+
+## tells if resources are changed or destroyed or added.
+terraform plan
