@@ -50,12 +50,13 @@ resource "aws_default_route_table" "terraform_private_rt" {
 }
 
 resource "aws_subnet" "terraform_public_subnet" {
+	count = 2 # meta argument
 	vpc_id = aws_vpc.terraform_vpc.id
-	cidr_block = var.public_cidrs
+	cidr_block = var.public_cidrs[count.index]
 	map_public_ip_on_launch = true # all instances will have public ip
-	availability_zone = data.aws_availability_zones.available.names[0]
+	availability_zone = data.aws_availability_zones.available.names[count.index]
 
 	tags = {
-		Name = "terraform-public"
+		Name = "terraform-public-${count.index + 1}"
 	}
 }

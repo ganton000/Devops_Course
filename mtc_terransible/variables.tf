@@ -4,6 +4,6 @@ variable vpc_cidr {
 }
 
 variable public_cidrs {
-	type = string
-	default = "10.123.1.0/24"
+	type = list(string)
+	default = [ "10.123.1.0/24", "10.123.3.0/24" ]
 }
