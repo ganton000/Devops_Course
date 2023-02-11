@@ -79,3 +79,19 @@ resource "aws_subnet" "terraform_private_subnet" {
 	}
 
 }
+
+## associate subnets to route table
+resource "aws_route_table_association" "terrform_public_rt_assoc" {
+	count = length(local.azs)
+	subnet_id = aws_subnet.terraform_public_subnet.*.id[count.index]
+	route_table_id = aws_route_table.terraform_public_rt.id
+}
+
+## private subnets default to the default route table
+## so no need to associate
+## associate subnets to route table
+#resource "aws_route_table_association" "terrform_private_rt_assoc" {
+#	count = length(local.azs)
+#	subnet_id = aws_subnet.terraform_private_subnet[count.index].id
+#	route_table_id = aws_default_route_table.terraform_private_rt.id
+#}
