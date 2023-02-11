@@ -36,5 +36,13 @@ resource "aws_route" "terraform_route" {
 	route_table_id = aws_route_table.terraform_public_rt.id
 	destination_cidr_block = "0.0.0.0/0"
 	gateway_id = aws_internet_gateway.terraform_internet_gateway.id
+}
 
+# only route to vpc (private)
+resource "aws_default_route_table" "terraform_private_rt" {
+	default_route_table_id = aws_vpc.terraform_vpc.default_route_table_id
+
+	tags = {
+		Name = "terraform-private"
+	}
 }
