@@ -1,6 +1,6 @@
 ## local variables/params
 locals {
-	azs = data.aws_availability_zones.available.names[count.index]
+	azs = data.aws_availability_zones.available.names
 }
 
 ## data source
@@ -56,9 +56,9 @@ resource "aws_default_route_table" "terraform_private_rt" {
 }
 
 resource "aws_subnet" "terraform_public_subnet" {
-	count = length(var.public_cidrs) # meta argument with length function
+	count = length(local.azs) # meta argument with length function
 	vpc_id = aws_vpc.terraform_vpc.id
-	cidr_block = var.public_cidrs[count.index]
+	cidr_block = cidrsubnet(var.vpc_cidr,8,count.index)
 	map_public_ip_on_launch = true # all instances will have public ip
 	availability_zone = local.azs[count.index]
 
@@ -68,9 +68,9 @@ resource "aws_subnet" "terraform_public_subnet" {
 }
 
 resource "aws_subnet" "terraform_private_subnet" {
-	count = length(var.private_cidrs)
+	count = length(local.azs)
 	vpc_id = aws_vpc.terraform_vpc.id
-	cidr_block = var.private_cidrs[count.index]
+	cidr_block = cidrsubnet(var.vpc_cidr,8,length(local.azs)+count.index)
 	map_public_ip_on_launch = false
 	availability_zone = local.azs[count.index]
 

@@ -46,3 +46,5 @@ this will create the new resource before destroying the current one, eliminating
 
 ## accessing variables in terraform console
 The console looks for the vars only in terraform.tfvars file!
+
+can access locals via: local. keyword
