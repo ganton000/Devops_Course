@@ -21,3 +21,17 @@ terraform state show aws_vpc.terraform-vpc | grep "id"
 
 ## tells if resources are changed or destroyed or added.
 terraform plan
+
+
+## can add lifecycle {} to resources to indicate how to treat currently existing resources prior to deleting/replacing and adding new ones.
+
+an example is:
+
+resource "resource_type" "logical_name" {
+	lifecycle {
+		create_before_destroy = true
+	}
+}
+
+this will create the new resource before destroying the current one, eliminating any errors that may be caused by other resources that depend on the currently existing one.
+

@@ -10,6 +10,10 @@ resource "aws_vpc" "terraform_vpc" {
 	tags = {
 		Name = "terraform_vpc-${random_id.random.dec}"
 	}
+
+	lifecycle {
+		create_before_destroy = true
+	}
 }
 
 resource "aws_internet_gateway" "terraform_internet_gateway" {
