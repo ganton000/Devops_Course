@@ -1,0 +1,10 @@
+Commands to generate ssh-key for ec2 instances
+
+# ED25519 is better for production but does not support Windows Instances, EC2 Instance Connect or EC2 Serial Console.
+
+
+commands:
+
+ssh-keygen -t rsa # save to ~/.ssh/key
+
+# no passphrase necessary (optional)

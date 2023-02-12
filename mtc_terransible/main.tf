@@ -95,3 +95,32 @@ resource "aws_route_table_association" "terrform_public_rt_assoc" {
 #	subnet_id = aws_subnet.terraform_private_subnet[count.index].id
 #	route_table_id = aws_default_route_table.terraform_private_rt.id
 #}
+
+resource "aws_security_group" "terraform_sg" {
+	name = "public_sg"
+	description = "security group for public instances"
+	vpc_id = aws_vpc.terraform_vpc.id
+}
+
+resource "aws_security_group_rule" "ingress_all" {
+	type = "ingress"
+	from_port = 0
+	to_port= 65535
+	protocol = "-1" # any protocol [TCP,UDP,ICMP]
+	cidr_blocks = [ var.access_ip ]
+	security_group_id = aws_security_group.terraform_sg.id
+}
+
+resource "aws_security_group_rule" "egress_all" {
+	type = "egress"
+	from_port = 0
+	to_port= 65535
+	protocol = "-1" # any protocol [TCP,UDP,ICMP]
+	cidr_blocks = ["0.0.0.0/0"]
+	security_group_id = aws_security_group.terraform_sg.id
+}
+
+#resource "aws_security_group" "terraform_sg" {
+#	name = "private_sg"
+#	description = "security group for private instances"
+#}
