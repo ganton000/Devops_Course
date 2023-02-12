@@ -55,3 +55,8 @@ terraform state list # to find resource to taint
 terraform taint <resource_name>
 
 This will replace that resource on the next terraform apply.
+
+
+## Formatting tf files
+
+terraform format
