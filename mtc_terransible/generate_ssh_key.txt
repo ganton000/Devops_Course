@@ -8,3 +8,7 @@ commands:
 ssh-keygen -t rsa -f <file_name> # save to ~/.ssh/terrakey
 
 # no passphrase necessary (optional)
+
+
+## to ssh into an instance
+ssh -i ~/.ssh/<key_file_name> <host_name>@<ip_address>
