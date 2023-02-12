@@ -5,6 +5,6 @@ Commands to generate ssh-key for ec2 instances
 
 commands:
 
-ssh-keygen -t rsa # save to ~/.ssh/key
+ssh-keygen -t rsa -f <file_name> # save to ~/.ssh/terrakey
 
 # no passphrase necessary (optional)

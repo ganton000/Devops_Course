@@ -75,7 +75,7 @@ resource "aws_subnet" "terraform_private_subnet" {
 	availability_zone = local.azs[count.index]
 
 	tags = {
-		Name = "terraform-private-${count.index +1}"
+		Name = "terraform-private-${count.index+1}"
 	}
 
 }

@@ -27,3 +27,16 @@ variable main_vol_size {
 	type = number
 	default = 8
 }
+
+variable ec2_instance_count {
+	type = number
+	default = 2
+}
+
+variable key_name {
+	type = string
+}
+
+variable public_key_path {
+	type = string
+}
