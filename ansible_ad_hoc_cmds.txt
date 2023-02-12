@@ -1,0 +1,71 @@
+Basic Ansible Ad Hoc Commands
+
+##
+pings to ensure python is ready and ansible is ready to perform actions on the current machine (not a network test)
+##
+ansible localhost -m ping
+
+
+##
+The command is an Ansible playbook that runs a shell module (-m shell) on the localhost (localhost) with the argument (-a) of "/bin/ls". This means that the command will run the /bin/ls command on the local machine where the Ansible playbook is executed, and return the results of that command.
+
+The -a (or "args") flag is used in Ansible to specify the arguments that are passed to the module being executed. The -a flag here is used to specify that the /bin/ls command should be run on the target machine.
+
+In other words, this command is using Ansible to run the ls command on the local machine and return the list of files and directories in the current working directory.
+##
+
+ansible localhost -m shell -a "/bin/ls"
+ansible localhost -a "/bin/ls" ## as shell is default for -m
+
+##
+built-in ansible modules:
+
+localhost is the target machine
+
+-m ansible.builtin.apt declares the ansible.builtin.apt module.
+
+-a are the args.
+We are looking to install nginx with the present state value. Present implies if nginx is already present in the target machine, it will not install it again (saves time).
+
+If statement is absent, it will remove nginx if already installed.
+
+--become (or --become-user root) is keyword flag to allow sudo user access.
+##
+
+ansible localhost -m ansible.builtin.apt -a "name=nginx state=present" --become-user root
+
+##
+install python3-apt dependency
+
+Note:
+Yum is used primarily by OSes like RedHat, CentOS and Fedora. Dnf replaced yum on more current versions of RedHat, CentOS, etc
+
+Apt is used by OSes like Ubuntu.
+##
+
+ansible localhost -m "apt name=python3-apt state=latest" --become-user root
+
+##
+So for macOS we can use:
+
+ansible localhost -m shell -a "brew upgrade nginx" --become-user root
+
+##
+to confirm nginx on Ubuntu:
+systemctl status nginx
+
+on macOS:
+ansible localhost -m shell -a "brew services list | grep nginx"
+
+or:
+
+ansible localhost -m shell -a "launchctl list | grep nginx || echo 'Nginx service not found.'"
+
+
+###
+failed_when to specifiy conditions on failure:
+###
+
+ansible localhost -m shell -a "launchctl list | grep nginx" -a "failed_when: return_code != 0"
+
+
