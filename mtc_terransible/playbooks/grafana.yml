@@ -1,0 +1,34 @@
+### https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_intro.html
+## ansible-playbook ./grafana.yml
+###
+---
+- name: Install Grafana
+  hosts: hosts
+  become: yes
+
+  tasks:
+    # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
+    - name: download apt key
+      ansible.builtin.apt_key: # sudo apt-key list | grep gpg to confirm
+        url: https://packages.grafana.com/gpg.key
+        state: present
+    # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_repository_module.html
+    - name: Add Grafana repo to sources.list
+      ansible.builtin.apt_repository:
+        repo: deb https://packages.grafana.com/oss/deb stable main
+        # file in ubuntu stored in /etc/apt/sources.list.d/, can ls to check
+        filename: grafana #grafana.list suffix is appended by default
+        state: present
+    # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+    - name: Update apt cache and install Grafana
+      ansible.builtin.apt: # which grafana-server to confirm
+        name: grafana
+        update_cache: true
+        #pkg:
+        #  - grafana
+    # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html
+    - name: Ensure Grafana is started and enabled
+      ansible.builtin.systemd:
+        name: grafana-server
+        enabled: true
+        state: started #  systemctl status grafana-server to confirm
