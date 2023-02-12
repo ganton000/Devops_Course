@@ -1,0 +1,19 @@
+## default hosts file for ansible
+sudo vim /etc/ansible/hosts ## on linux
+
+Can create one:
+/usr/local/etc/ansible/hosts ## on macOS
+or at:
+~/ansible/hosts ## make sure to give permissions
+###
+
+
+###
+can edit /hosts to point to correct interpreter and connection, i.e.:
+[hosts]
+localhost
+
+[hosts:vars]
+ansible_connection=local
+ansible_python_interpreter=/usr/bin/python3
+###
