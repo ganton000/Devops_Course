@@ -1,0 +1,14 @@
+## ubuntu ami id atm is: ami-0557a15b87f6559cf
+
+## command to describe ami id
+aws ec2 describe-images --image-ids <ami_id> --region us-east-1 | jq .Images[0].ImageLocation
+
+## for owners [] param
+aws ec2 describe-images --image-ids <ami_id> --region us-east-1 | jq .Images[0].OwnerId
+
+## filtered name value
+aws ec2 describe-images --image-ids ami-0557a15b87f6559cf --region us-east-1 --profile admin | jq .Images[0].Name
+
+## confirm ami after terraform apply
+
+terraform state show data.aws_ami.server_ami
