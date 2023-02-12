@@ -41,4 +41,19 @@ resource "aws_instance" "terraform_main" {
 	tags = {
 		Name = "terraform-main-${random_id.ec2_random_id[count.index].dec}"
 	}
+
+	# runs every time this resource is created
+	## provisioners have hyphens
+	## self keyword within provisioner references the resource it is in
+	## can specifiy interpreter as well
+	provisioner "local-exec" {
+		command = "printf \"\n${self.public_ip}\" >> aws_hosts"
+	}
+
+	## destroy provisioner -- acts as cleanup
+	## only works when terraform destroy command is run
+	provisioner "local-exec" {
+		when = destroy
+		command = "sed -i -e '/^[0-9]/d' aws_hosts"
+	}
 }

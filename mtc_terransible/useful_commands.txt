@@ -48,3 +48,10 @@ this will create the new resource before destroying the current one, eliminating
 The console looks for the vars only in terraform.tfvars file!
 
 can access locals via: local. keyword
+
+## taint command to force re-deploy instance
+
+terraform state list # to find resource to taint
+terraform taint <resource_name>
+
+This will replace that resource on the next terraform apply.
