@@ -1,0 +1,31 @@
+
+# updat packages, install gnupg and software-properties-common
+sudo apt-get update && sudo apt-get install -y gnupg software-properties-common
+
+
+
+# (optional, update packages and install gpg if gpg does not exist)
+sudo apt update && sudo apt install gpg
+
+# gets hashicorp gpg key
+wget -O- https://apt.releases.hashicorp.com/gpg | gpg --dearmor | sudo tee /usr/share/keyrings/hashicorp-archive-keyring.gpg
+
+#######
+Can also add key this way
+### curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-ky add -
+#########
+
+# sets key
+gpg --no-default-keyring --keyring /usr/share/keyrings/hashicorp-archive-keyring.gpg --fingerprint
+
+# creates hashicorp.list using key
+echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+
+# update packages
+sudo apt update
+
+# installs terraform
+sudo apt install terraform
+
+# to confirm
+terraform -help
