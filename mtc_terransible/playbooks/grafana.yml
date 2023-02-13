@@ -3,7 +3,7 @@
 ###
 ---
 - name: Install Grafana
-  hosts: hosts
+  hosts: main
   become: yes
 
   tasks:

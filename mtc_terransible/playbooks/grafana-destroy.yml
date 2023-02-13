@@ -1,6 +1,6 @@
 ---
 - name: Remove Grafana
-  hosts: localhost
+  hosts: main
   become: yes
 
   tasks:
