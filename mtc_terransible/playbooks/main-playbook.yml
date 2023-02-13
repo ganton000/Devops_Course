@@ -1,0 +1,102 @@
+### https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_intro.html
+## ansible-playbook ./grafana.yml
+###
+---
+- name: Bootstrap Main Node
+  hosts: main
+  become: yes
+  vars:
+    listen_address: 0.0.0.0
+    listen_port: 9000
+
+  tasks:
+    # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
+    - name: download apt key
+      ansible.builtin.apt_key: # sudo apt-key list | grep gpg to confirm
+        url: https://packages.grafana.com/gpg.key
+        state: present
+    # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_repository_module.html
+    - name: Add Grafana repo to sources.list
+      ansible.builtin.apt_repository:
+        repo: deb https://packages.grafana.com/oss/deb stable main
+        # file in ubuntu stored in /etc/apt/sources.list.d/, can ls to check
+        filename: grafana #grafana.list suffix is appended by default
+        state: present
+    # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+    - name: Update apt cache and install Grafana
+      ansible.builtin.apt: # which grafana-server to confirm
+        name: grafana
+        update_cache: true
+        #pkg:
+        #  - grafana
+    # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html
+    - name: Ensure Grafana is started and enabled
+      ansible.builtin.systemd:
+        name: grafana-server
+        enabled: true
+        state: started #  systemctl status grafana-server to confirm
+    - name: Download Prometheus
+      ansible.builtin.get_url: #equivalent to wget for ansible
+        url: https://github.com/prometheus/prometheus/releases/download/v2.30.3/prometheus-2.30.3.linux-amd64.tar.gz # monitoring and alerting system
+        dest: /home/ubuntu/
+    - name: Extract Zipped Prometheus Resources
+      ansible.builtin.unarchive:
+        src: /home/ubuntu/prometheus-2.30.3.linux-amd64.tar.gz
+        dest: /home/ubuntu/
+        remote_src: yes #unzipping a file in remote system, not local system
+    - name: Create Prometheus Group
+      ansible.builtin.group:
+        name: prometheus
+        state: present
+    - name: Create Prometheus User
+      ansible.builtin.user:
+        name: prometheus
+        group: prometheus
+        shell: /sbin/nologin # no permissions to login (no system access)
+    - name: Create Prometheus Directories and Set Permissions
+      ansible.builtin.file:
+        path: "{{ item }}" # used when using a loop
+        state: directory
+        recurse: yes # allows us to set owner/group recursively
+        owner: prometheus
+        group: prometheus
+        mode: '0755' # adds permissions to the below directories
+      loop:
+        - /etc/prometheus
+        - /etc/prometheus/rules
+        - /etc/prometheus/rules.d
+        - /etc/prometheus/files_sd
+        - /var/lib/prometheus
+    - name: Copy Files
+      ansible.builtin.copy:
+        src: "{{ item }}" # used when using a loop
+        dest: /usr/local/bin
+        remote_src: yes
+        mode: '0755'
+        owner: prometheus
+        group: prometheus
+      loop:
+        - /home/ubuntu/prometheus-2.30.3.linux-amd64/prometheus
+        - /home/ubuntu/prometheus-2.30.3.linux-amd64/promtool
+    - name: Copy Files
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: /etc/prometheus
+        remote_src: yes
+      loop:
+        - /home/ubuntu/prometheus-2.30.3.linux-amd64/consoles
+        - /home/ubuntu/prometheus-2.30.3.linux-amd64/console_libraries
+    - name: Create Config File # ansible uses mustache syntax (jinja2 formatted templates)
+      ansible.builtin.template:
+        src: prometheus.yml.j2
+        dest: /etc/prometheus/prometheus.yml
+    - name: Create Systemd File
+      ansible.builtin.template:
+        src: prometheus.service.j2
+        dest: /etc/systemd/system/prometheus.service
+    - name: Ensure Prometheus is started
+      ansible.builtin.systemd:
+        name: prometheus
+        enabled: true
+        state: started
+
