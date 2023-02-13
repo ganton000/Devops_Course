@@ -48,7 +48,15 @@ ansible localhost -m "apt name=python3-apt state=latest" --become-user root
 ##
 So for macOS we can use:
 
+ansible localhost -m shell -a "brew install nginx" --become-user root
+
+to upgrade:
+
 ansible localhost -m shell -a "brew upgrade nginx" --become-user root
+
+to remove:
+
+ansible localhost -m shell -a "brew uninstall nginx" --become-user root
 
 ##
 to confirm nginx on Ubuntu:
@@ -67,5 +75,3 @@ failed_when to specifiy conditions on failure:
 ###
 
 ansible localhost -m shell -a "launchctl list | grep nginx" -a "failed_when: return_code != 0"
-
-
