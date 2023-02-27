@@ -1,0 +1,32 @@
+### https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_intro.html
+## ansible-playbook ./jenkins.yml
+###
+---
+- name: Install Jenkins
+  hosts: localhost
+  become: yes
+
+  tasks:
+    # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_key_module.html
+    - name: download apt key
+      ansible.builtin.apt_key: # sudo apt-key list to confirm
+        url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
+        state: present
+    # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_repository_module.html
+    - name: Add Jenkins repo to sources.list
+      ansible.builtin.apt_repository:
+        repo: deb https://pkg.jenkins.io/debian-stable binary/
+        # file in ubuntu stored in /etc/apt/sources.list.d/, can ls to check
+        filename: jenkins #jenkins.list suffix is appended by default
+        state: present
+    # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html
+    - name: Update apt cache and install jenkins
+      ansible.builtin.apt:
+        name: jenkins
+        update_cache: true
+    # https://docs.ansible.com/ansible/latest/collections/ansible/builtin/systemd_module.html
+    - name: Ensure Jenkins is started and enabled
+      ansible.builtin.systemd:
+        name: jenkins
+        enabled: true
+        state: started #  systemctl status jenkins to confirm
