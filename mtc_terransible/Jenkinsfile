@@ -4,6 +4,7 @@ pipeline {
 	environment {
 		TF_IN_AUTOMATION='true'
 		TF_CLI_CONFIG_FILE = credentials('tf-creds') // in Manage Jenkins -> Manage Credentials
+		AWS_SHARED_CREDENTIALS_FILE = '/home/ubuntu/.aws/credentials'
 	}
 
 	stages {
@@ -21,6 +22,20 @@ pipeline {
 		stage("Apply") {
 			steps {
 				sh 'terraform apply -auto-approve -no-color'
+			}
+		}
+		stage("EC2 Wait") {
+			steps {
+				sh 'aws ec2 wait instance-status-ok --region us-east-1'
+			}
+		}
+		stage("Ansible") {
+			steps {
+				// credentialsId -> Manage Jenkins -> Manage Credentials -> key
+				ansiblePlaybook(
+					credentialsId: 'ec2-ssh-key',
+					inventory: aws_hosts,
+					playbook: 'playbooks/main-playbook.yml')
 			}
 		}
 		stage("Destroy") {
