@@ -19,6 +19,15 @@ pipeline {
 				sh 'terraform plan -no-color'
 			}
 		}
+		stage("Validate Apply") {
+			input {
+				message "Do you want to apply this plan?"
+				ok "Apply this plan."
+			}
+			steps {
+				echo "Apply Accepted"
+			}
+		}
 		stage("Apply") {
 			steps {
 				sh 'terraform apply -auto-approve -no-color'
@@ -29,6 +38,15 @@ pipeline {
 				sh 'aws ec2 wait instance-status-ok --region us-east-1'
 			}
 		}
+		stage("Validate Ansible") {
+			input {
+				message "Do you want to run Ansible?"
+				ok "Run Ansible."
+			}
+			steps {
+				echo "Ansible Accepted"
+			}
+		}
 		stage("Ansible") {
 			steps {
 				// credentialsId -> Manage Jenkins -> Manage Credentials -> key
@@ -36,6 +54,15 @@ pipeline {
 					credentialsId: 'ec2-ssh-key',
 					inventory: aws_hosts,
 					playbook: 'playbooks/main-playbook.yml')
+			}
+		}
+		stage("Validate Destroy") {
+			input {
+				message "Do you want to destroy the stack?"
+				ok "Destroy."
+			}
+			steps {
+				echo "Destroy Accepted"
 			}
 		}
 		stage("Destroy") {
