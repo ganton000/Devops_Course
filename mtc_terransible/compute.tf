@@ -46,16 +46,16 @@ resource "aws_instance" "terraform_main" {
   ## provisioners have hyphens
   ## self keyword within provisioner references the resource it is in
   ## can specifiy interpreter as well
-  provisioner "local-exec" {
-    command = "printf \"\n${self.public_ip}\" >> aws_hosts && aws ec2 wait instance-status-ok --instance-ids {self.id} --region us-east-1 --profile admin"
-  }
+  #provisioner "local-exec" {
+  #  command = "printf \"\n${self.public_ip}\" >> aws_hosts && aws ec2 wait instance-status-ok --instance-ids {self.id} --region us-east-1 --profile admin"
+  #}
 
-  ## destroy provisioner -- acts as cleanup
-  ## only works when terraform destroy command is run
-  provisioner "local-exec" {
-    when    = destroy
-    command = "sed -i -e '/^[0-9]/d' aws_hosts"
-  }
+  ### destroy provisioner -- acts as cleanup
+  ### only works when terraform destroy command is run
+  #provisioner "local-exec" {
+  #  when    = destroy
+  #  command = "sed -i -e '/^[0-9]/d' aws_hosts"
+  #}
 }
 
 ## remote provisioner --
@@ -90,3 +90,9 @@ resource "null_resource" "grafana_install" {
 
   }
 }
+
+output "instance_ips" {
+  value = [for i in aws_instance.mtc_main[*]: i.public_ip ]
+}
+
+#terraform output will show the output above
